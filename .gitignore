@@ -1,0 +1,23 @@
+# Exclude build directory
+./fan/blepreph/build/
+./remote/BLECent1/build/
+
+# ESP-IDF generated files
+/sdkconfig.old
+/CMakeCache.txt
+/CMakeFiles/
+/dependencies.lock
+/bootloader/
+/managed_components/
+
+# Logs or temp files
+*.log
+*.tmp
+
+# VS Code or IDE-specific
+.vscode/
+.idea/
+
+# Python virtual environments (if used)
+venv/
+__pycache__/
