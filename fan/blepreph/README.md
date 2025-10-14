@@ -1,6 +1,54 @@
 | Supported Targets | ESP32 | ESP32-C2 | ESP32-C3 | ESP32-C5 | ESP32-C6 | ESP32-C61 | ESP32-H2 | ESP32-S3 |
 | ----------------- | ----- | -------- | -------- | -------- | -------- | --------- | -------- | -------- |
 
+
+
+
+## -------------------------------- Modifications in the Example code -----------------------------------------
+
+The example code has been modified to allow the peripheral to accept and manage multiple simultaneous BLE connections (up to two connections by default).
+
+Summary of changes
+- Added a small connection-tracking layer in `gatt_svr.c` and exposed helper accessors in `bleprph.h`.
+- Updated GAP event handling in `main.c` to update the connection tracker on connect/disconnect events and to keep advertising as long as the maximum number of allowed connections hasn't been reached.
+- Minor logging improvements to show the connection index when operations occur on a characteristic/descriptor.
+
+Files and the relevant changes
+
+- `gatt_svr.c`
+  - Introduced a fixed-size array `conn_handles[MAX_CONNECTIONS]` (with `MAX_CONNECTIONS` defined as 2) to store active connection handles. Entries not in use are set to `BLE_HS_CONN_HANDLE_NONE`.
+  - Added helper functions:
+    - `int add_connection_handle(uint16_t conn_handle)` — adds a new connection handle to the first free slot and returns its index or -1 if full.
+    - `void remove_connection_handle(uint16_t conn_handle)` — removes a connection handle by setting its slot back to `BLE_HS_CONN_HANDLE_NONE`.
+    - `int count_active_connections(void)` — returns how many connections are currently active.
+    - `int get_connection_index(uint16_t conn_handle)` — returns the index (0..MAX_CONNECTIONS-1) for a given handle or -1 if not found.
+  - The access callback `gatt_svc_access` logs the `conn_handle` and the connection index (using `get_connection_index`) when available; this helps trace which peer is performing GATT operations when multiple peers are connected.
+
+- `bleprph.h`
+  - Exposed the connection-tracking helper prototypes so other modules (notably `main.c`) can add/remove connections and query the active count.
+
+- `main.c`
+  - In the GAP event handler (`bleprph_gap_event`) the code now calls `add_connection_handle()` when a connection is successfully established and `remove_connection_handle()` when a connection disconnects. The return index from `add_connection_handle()` is logged to help correlate logging from the GATT layer.
+  - After a new connection is added, advertising is resumed automatically if the number of active connections is still below the limit (so the peripheral can accept more connections up to `MAX_CONNECTIONS`). Conversely, when a disconnection occurs, advertising restarts if needed.
+  - The advertising logic was left otherwise intact; only the conditions around whether to restart advertising were updated to use `count_active_connections()`.
+
+Behavioral contract (how it works now)
+- Inputs: BLE connection and disconnection events received via NimBLE GAP callbacks, and GATT read/write requests from connected peers.
+- Outputs: The example tracks up to 2 simultaneous connections, logs operations including which connection index performed them, and continues advertising until the maximum concurrent connection count is reached.
+- Error modes: If `add_connection_handle()` is called when the connection table is full it returns -1; the current code logs the index but does not explicitly disconnect the extra peer. That behavior can be changed depending on desired policy (reject new connection, disconnect LRU, etc.).
+
+Edge cases and notes
+- The connection table size is controlled by `MAX_CONNECTIONS` in `gatt_svr.c`. Increase this value to allow more concurrent connections, but also update build-time NimBLE configuration options (for example `CONFIG_BT_NIMBLE_MAX_CONNECTIONS`, `CONFIG_BT_NIMBLE_MAX_CCCDS`) and ensure sufficient RAM.
+- Currently `add_connection_handle` does not check for duplicates; if NimBLE re-uses a handle or a connect event is delivered multiple times for the same handle, the code will store duplicates unless the handle already exists (the search for a free slot will keep existing entries, so duplicates aren't added, but there's no explicit guard). `get_connection_index()` will return the first matching index.
+- When the connection limit is reached, the example simply won't advertise, but doesn't actively reject or close new connection attempts; NimBLE or the controller will handle any incoming connection failures according to its configuration.
+
+Suggested small follow-ups (low risk)
+- Add bounds-checking and duplicate-detection to `add_connection_handle()` and return a clear error/log when attempts to add a handle when the table is full.
+- Optionally expose a configuration macro or Kconfig option for `MAX_CONNECTIONS` to keep code and configuration in sync.
+- Implement a simple LRU or policy to drop or refuse connections when the table is full, if desired for your application.
+
+----------------------------------------------------------------------------------------------------------------
+
 # BLE Peripheral Example
 
 (See the README.md file in the upper level 'examples' directory for more information about examples.)

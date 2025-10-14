@@ -1,6 +1,10 @@
 # Exclude build directory
 ./fan/blepreph/build/
+./fan/blepreph/.devcontainer/
+./fan/blepreph/.vscode/
 ./remote/BLECent1/build/
+./remote/BLECent1/.devcontainer/
+./remote/BLECent1/.vscode/
 
 # ESP-IDF generated files
 /sdkconfig.old
