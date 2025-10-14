@@ -4,7 +4,7 @@
 
 
 
-## -------------------------------- Modifications in the Example code -----------------------------------------
+## ------------------ Modifications in the Example code -------------------
 
 The example code has been modified to allow the peripheral to accept and manage multiple simultaneous BLE connections (up to two connections by default).
 
