@@ -1,0 +1,474 @@
+//normal disconnect behavior + connect (once) LOGS
+
+
+Printing the advertisement fields of the received advertisement
+Printing the advertisement fields of the received advertisement
+I (3240) NimBLE: GAP procedure initiated: connect; 
+I (3240) NimBLE: peer_addr_type=0 peer_addr=
+I (3240) NimBLE: dc:da:0c:c1:03:aa
+I (3240) NimBLE:  scan_itvl=16 scan_window=16 itvl_min=24 itvl_max=40 latency=0 supervision_timeout=256 min_ce_len=0 max_ce_len=0 own_addr_type=0
+I (3260) NimBLE:
+
+I (3590) NimBLE: disconnect; reason=574 
+I (3590) NimBLE:
+
+I (3590) NimBLE: GAP procedure initiated: discovery;
+I (3590) NimBLE: own_addr_type=0 filter_policy=0 passive=1 limited=0 filter_duplicates=1
+I (3600) NimBLE: duration=forever
+I (3600) NimBLE:
+
+Printing the advertisement fields of the received advertisement 
+Printing the advertisement fields of the received advertisement
+Printing the advertisement fields of the received advertisement 
+I (3640) NimBLE: GAP procedure initiated: connect;
+I (3640) NimBLE: peer_addr_type=0 peer_addr=
+I (3640) NimBLE: dc:da:0c:c1:03:aa
+I (3640) NimBLE:  scan_itvl=16 scan_window=16 itvl_min=24 itvl_max=40 latency=0 supervision_timeout=256 min_ce_len=0 max_ce_len=0 own_addr_type=0
+I (3660) NimBLE:
+
+I (4270) NimBLE: Connection established 
+I (4280) NimBLE:
+
+I (4280) NimBLE: GATT procedure initiated: discover all services
+
+I (7970) NimBLE: GATT procedure initiated: discover all characteristics; 
+I (7970) NimBLE: start_handle=1 end_handle=5
+
+I (11670) NimBLE: GATT procedure initiated: discover all characteristics; 
+I (11670) NimBLE: start_handle=6 end_handle=13
+
+I (17520) NimBLE: GATT procedure initiated: discover all characteristics; 
+I (17520) NimBLE: start_handle=14 end_handle=26
+
+I (20770) NimBLE: GATT procedure initiated: discover all characteristics; 
+I (20770) NimBLE: start_handle=27 end_handle=65535
+
+I (22020) NimBLE: GATT procedure initiated: discover all descriptors; 
+I (22020) NimBLE: chr_val_handle=8 end_handle=9
+
+I (22470) NimBLE: GATT procedure initiated: discover all descriptors; 
+I (22470) NimBLE: chr_val_handle=18 end_handle=19
+
+I (22920) NimBLE: GATT procedure initiated: discover all descriptors; 
+I (22920) NimBLE: chr_val_handle=23 end_handle=24
+
+I (23570) NimBLE: GATT procedure initiated: discover all descriptors; 
+I (23570) NimBLE: chr_val_handle=29 end_handle=65535
+
+I (25020) NimBLE: Service discovery complete; status=0 conn_handle=0
+
+I (25020) NimBLE: GATT procedure initiated: read;
+I (25020) NimBLE: att_handle=16
+
+I (25820) NimBLE: Read complete; status=0 conn_handle=0
+I (25820) NimBLE:  attr_handle=16 value=
+I (25820) NimBLE: 0x00
+I (25820) NimBLE:
+
+I (25820) NimBLE: GATT procedure initiated: write; 
+I (25830) NimBLE: att_handle=26 len=2
+
+I (26370) NimBLE: Write complete; status=270 conn_handle=0 attr_handle=26
+
+I (26370) NimBLE: GATT procedure initiated: write;
+I (26370) NimBLE: att_handle=24 len=2
+
+I (27070) NimBLE: Subscribe complete; status=0 conn_handle=0 attr_handle=24
+
+I (27070) NimBLE: GATT procedure initiated: write;
+I (27070) NimBLE: att_handle=30 len=2
+
+I (28020) NimBLE: Subscribe to the custom subscribable characteristic complete; status=0 conn_handle=0
+I (28020) NimBLE:  attr_handle=30 value=
+I (28020) NimBLE:
+
+I (28030) NimBLE: GATT procedure initiated: write;
+I (28030) NimBLE: att_handle=29 len=1
+
+I (28520) NimBLE: Write to the custom subscribable characteristic complete; status=0 conn_handle=0 attr_handle=29
+
+I (28520) NimBLE: GATT procedure initiated: read;
+I (28530) NimBLE: att_handle=29
+
+I (29120) NimBLE: received notification; conn_handle=0 attr_handle=29 attr_len=1
+
+I (29220) NimBLE: Read complete for the subscribable characteristic; status=0 conn_handle=0
+I (29220) NimBLE:  attr_handle=29 value=
+I (29220) NimBLE: 0x19
+I (29230) NimBLE:
+
+I (135880) NimBLE: received notification; conn_handle=0 attr_handle=29 attr_len=1
+
+
+
+
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////  |------  |         |  |          |              ///////////////////////////////////////////////////////////////////////
+/////////////  |        |         |  |          |              ///////////////////////////////////////////////////////////////////////////////////
+/////////////  |------  |         |  |          |                                                                   /////////////////////////////////////
+/////////////  |        |         |  |          |               DEBUG LOGS                                          /////////////////////////////////////////////////////////////////////////////////////////
+/////////////  |         \       /   |          |                                                                   /////////////////////////////////////////////////////////////////////////////////////////
+/////////////  |          \_____/    |_______   |_______       /////////////////////////////////////////////////////////////////////////////////////////
+/////////////                                                  /////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+I (977) BTDM_INIT: Bluetooth MAC: 48:e7:29:b6:e8:0a
+I (987) phy_init: phy_version 4860,6b7a6e5,Feb  6 2025,14:47:07
+D (987) phy_init: loading PHY init data from application binary
+D (997) nvs: nvs_open_from_partition phy 0
+D (997) nvs: nvs_get cal_version 4
+D (997) nvs: nvs_get_str_or_blob cal_mac
+D (1007) efuse: BLK0 REG2 [8-15], len=8 bits
+D (1007) efuse: BLK0 REG2 [0-7], len=8 bits
+D (1017) efuse: BLK0 REG1 [24-31], len=8 bits
+D (1017) efuse: BLK0 REG1 [16-23], len=8 bits
+D (1017) efuse: BLK0 REG1 [8-15], len=8 bits
+D (1027) efuse: BLK0 REG1 [0-7], len=8 bits
+D (1027) efuse: BLK0 REG2 [16-23], len=8 bits
+D (1037) nvs: nvs_get_str_or_blob cal_data
+D (1037) nvs: nvs_close 1
+D (1047) efuse: BLK0 REG2 [8-15], len=8 bits
+D (1047) efuse: BLK0 REG2 [0-7], len=8 bits
+D (1047) efuse: BLK0 REG1 [24-31], len=8 bits
+D (1047) efuse: BLK0 REG1 [16-23], len=8 bits
+D (1057) efuse: BLK0 REG1 [8-15], len=8 bits
+D (1057) efuse: BLK0 REG1 [0-7], len=8 bits
+D (1067) efuse: BLK0 REG2 [16-23], len=8 bits
+I (1137) phy_init: Saving new calibration data due to checksum failure or outdated calibration data, mode(0)
+D (1147) nvs: nvs_open_from_partition phy 1
+D (1147) nvs: nvs_set_blob cal_data 1904
+D (1207) efuse: BLK0 REG2 [8-15], len=8 bits
+D (1207) efuse: BLK0 REG2 [0-7], len=8 bits
+D (1207) efuse: BLK0 REG1 [24-31], len=8 bits
+D (1217) efuse: BLK0 REG1 [16-23], len=8 bits
+D (1217) efuse: BLK0 REG1 [8-15], len=8 bits
+D (1217) efuse: BLK0 REG1 [0-7], len=8 bits
+D (1227) efuse: BLK0 REG2 [16-23], len=8 bits
+D (1227) nvs: nvs_set_blob cal_mac 6
+D (1237) nvs: nvs_set cal_version 4 4860
+D (1237) nvs: nvs_close 2
+27) NimBLE: subevent: 0x2
+D (2327) NimBLE: 
+
+D (2327) NimBLE: ble_hs_event_rx_hci_ev; opcode= ble_hs_event_rx_hci_ev; opcode=0x3e
+D (2337) NimBLE: subevent: 0x2
+D (2337) NimBLE:
+
+D (2337) NimBLE: ble_hs_event_rx_hci_ev; opcode=0x3e
+D (2347) NimBLE: subevent: 0x2
+D (2347) NimBLE: 
+
+D (2347) NimBLE: ble_hs_event_rx_hci_ev; opcode=0x3e
+D (2357) NimBLE: subevent: 0xa
+D (2357) NimBLE:
+
+D (2357) NimBLE: ble_hs_hci_cmd_send: ogf=0x08 ocf=0x0016 len=2
+
+D (2367) NimBLE: 0x16
+D (2367) NimBLE: 0x20
+D (2367) NimBLE: 0x02
+D (2367) NimBLE: 0x00
+D (2377) NimBLE: 0x00
+D (2377) NimBLE:
+
+D (2597) NimBLE: ble_hs_event_rx_hci_ev; opcode=0x5 
+D (2597) NimBLE: 
+
+I (2597) NimBLE: disconnect; reason=574
+D (2597) NimBLE: handle=0 our_ota_addr_type=0 our_ota_addr=48:e7:29:b6:e8:0a
+D (2607) NimBLE: our_id_addr_type=0 our_id_addr=48:e7:29:b6:e8:0a
+D (2607) NimBLE: peer_ota_addr_type=0 peer_ota_addr=dc:da:0c:c1:03:aa 
+D (2617) NimBLE: peer_id_addr_type=0 peer_id_addr=dc:da:0c:c1:03:aa
+D (2627) NimBLE: conn_itvl=40 conn_latency=0 supervision_timeout=256 encrypted=0 authenticated=0 bonded=0
+I (2637) NimBLE:
+
+I (2637) NimBLE: GAP procedure initiated: discovery;
+I (2637) NimBLE: own_addr_type=0 filter_policy=0 passive=1 limited=0 filter_duplicates=1 
+I (2647) NimBLE: duration=forever
+I (2647) NimBLE:
+
+D (2657) NimBLE: ble_hs_hci_cmd_send: ogf=0x08 ocf=0x000b len=7
+
+D (2657) NimBLE: 0x0b
+D (2657) NimBLE: 0x20
+D (2667) NimBLE: 0x07 
+D (2667) NimBLE: 0x00
+D (2667) NimBLE: 0x30
+D (2667) NimBLE: 0x00
+D (2667) NimBLE: 0x30
+D (2677) NimBLE: 0x00
+D (2677) NimBLE: 0x00
+D (2677) NimBLE: 0x00 
+D (2677) NimBLE:
+
+D (2687) NimBLE: ble_hs_hci_cmd_send: ogf=0x08 ocf=0x000c len=2
+
+D (2687) NimBLE: 0x0c
+D (2687) NimBLE: 0x20
+D (2687) NimBLE: 0x02
+D (2697) NimBLE: 0x01 
+D (2697) NimBLE: 0x01
+D (2697) NimBLE:
+
+D (2707) NimBLE: ble_hs_event_rx_hci_ev; opcode=0x3e
+D (2707) NimBLE: subevent: 0x2
+D (2707) NimBLE: 
+
+Printing the advertisement fields of the received advertisement
+D (2717) NimBLE:     mfg_data=
+D (2717) NimBLE: 0x06
+D (2717) NimBLE: :0x00
+D (2727) NimBLE: :0x01
+D (2727) NimBLE: :0x09
+D (2727) NimBLE: :0x20
+D (2727) NimBLE: :0x22
+D (2727) NimBLE: :0x1d
+D (2737) NimBLE: :0x12
+D (2737) NimBLE: :0x7f
+D (2737) NimBLE: :0x42
+D (2737) NimBLE: :0xee
+D (2737) NimBLE: :0x19
+D (2747) NimBLE: :0x39
+D (2747) NimBLE: :0x93
+D (2747) NimBLE: :0x14
+D (2747) NimBLE: :0xae
+D (2757) NimBLE: :0x4a
+D (2757) NimBLE: :0x6c
+D (2757) NimBLE: :0x3b
+D (2757) NimBLE: :0x10
+D (2757) NimBLE: :0x50
+D (2767) NimBLE: :0x01
+D (2767) NimBLE: :0x53
+D (2767) NimBLE: :0x0d
+D (2767) NimBLE: :0xc8
+D (2767) NimBLE: :0x0c
+D (2777) NimBLE: :0xbc
+D (2777) NimBLE: :0xa7
+D (2777) NimBLE: :0x01
+D (2777) NimBLE:
+
+D (2777) NimBLE: ble_hs_event_rx_hci_ev; opcode=0x3e
+D (2787) NimBLE (3737) NimBLE: 0x00 
+D (3737) NimBLE: 
+
+D (3937) NimBLE: ble_hs_event_rx_hci_ev; opcode=0x3e
+D (3937) NimBLE: subevent: 0x4
+D (3937) NimBLE:
+
+D (3937) NimBLE: ble_hs_hci_cmd_send: ogf=0x01 ocf=0x001d len=2
+
+D (3947) NimBLE: 0x1d 
+D (3947) NimBLE: 0x04
+D (3947) NimBLE: 0x02
+D (3947) NimBLE: 0x00
+D (3957) NimBLE: 0x00
+D (3957) NimBLE:
+
+D (3957) NimBLE: ble_hs_event_rx_hci_ev; opcode=0xc 
+D (3967) NimBLE:
+
+I (3967) NimBLE: Connection established
+D (3967) NimBLE: handle=0 our_ota_addr_type=0 our_ota_addr=48:e7:29:b6:e8:0a
+D (3977) NimBLE: our_id_addr_type=0 our_id_addr=48:e7:29:b6:e8:0a 
+D (3977) NimBLE: peer_ota_addr_type=0 peer_ota_addr=dc:da:0c:c1:03:aa
+D (3987) NimBLE: peer_id_addr_type=0 peer_id_addr=dc:da:0c:c1:03:aa 
+D (3997) NimBLE: conn_itvl=40 conn_latency=0 supervision_timeout=256 encrypted=0 authenticated=0 bonded=0
+I (4007) NimBLE:
+
+I (4007) NimBLE: GATT procedure initiated: discover all services
+
+D (4007) NimBLE: host tx hci data; handle=0 length=11
+
+D (4017) NimBLE: ble_hs_hci_acl_tx():
+D (4017) NimBLE: 0x00
+D (4017) NimBLE: 0x00 
+D (4027) NimB0x00 
+D (6957) NimBLE:
+
+D (7037) NimBLE: ble_hs_hci_evt_acl_process(): conn_handle=0 pb=2 len=6 data=
+D (7037) NimBLE: 0x02
+D (7037) NimBLE: 0x00
+D (7037) NimBLE: 0x04
+D (7047) NimBLE: 0x00
+D (7047) NimBLE: 0x0b
+D (7047) NimBLE: 0x00
+D (7047) NimBLE:
+
+I (7047) NimBLE: Read complete; status=0 conn_handle=0
+I (7057) NimBLE:  attr_handle=16 value=
+I (7057) NimBLE: 0x00
+I (7057) NimBLE:
+
+I (7067) NimBLE: GATT procedure initiated: write; 
+I (7067) NimBLE: att_handle=26 len=2
+
+D (7067) NimBLE: host tx hci data; handle=0 length=9
+
+D (7077) NimBLE: ble_hs_hci_acl_tx():
+D (7077) NimBLE: 0x00
+D (7087) NimBLE: 0x00 
+D (7087) NimBLE: 0x09
+D (7087) NimBLE: 0x00
+D (7087) NimBLE: 0x05
+D (7087) NimBLE: 0x00
+D (7097) NimBLE: 0x04
+D (7097) NimBLE: 0x00
+D (7097) NimBLE: 0x12
+D (7097) NimBLE: 0x1a 
+D (7097) NimBLE: 0x00
+D (7107) NimBLE: 0x63
+D (7107) NimBLE: 0x64
+D (7107) NimBLE:
+
+297) NimBLE: 0x18 
+D (7297) NimBLE: 0x00 
+D (7307) NimBLE: 0x01
+D (7307) NimBLE: 0x00
+D (7307) NimBLE:
+
+D (7437) NimBLE: ble_hs_hci_evt_acl_process(): conn_handle=0 pb=2 len=5 data=
+D (7437) NimBLE: 0x01 
+D (7437) NimBLE: 0x00
+D (7437) NimBLE: 0x04
+D (7447) NimBLE: 0x00
+D (7447) NimBLE: 0x13 
+D (7447) NimBLE:
+
+I (7447) NimBLE: Subscribe complete; status=0 conn_handle=0 attr_handle=24
+
+I (7457) NimBLE: GATT procedure initiated: write;
+I (7457) NimBLE: att_handle=30 len=2
+
+D (7467) NimBLE: host tx hci data; handle=0 length=9
+
+D (7467) NimBLE: ble_hs_hci_acl_tx():
+D (7477) NimBLE: 0x00
+D (7477) NimBLE: 0x00
+D (7477) NimBLE: 0x09
+D (7477) NimBLE: 0x00 
+D (7477) NimBLE: 0x05
+D (7487) NimBLE: 0x00
+D (7487) NimBLE: 0x04
+D (7487) NimBLE: 0x00
+D (7487) NimBLE: 0x12
+D (7487) NimBLE: 0x1e
+D (7497) NimBLE: 0x00 
+D (7497) NimBLE: 0x01
+D (7497) NimBLE: 0x00
+D (7497) NimBLE:
+
+D (7637) NimBLE: ble_hs_hci_evt_acl_process(): conn_handle=0 pb=2 len=5 data=
+D (7637) NimBLE: 0x01 
+D (7637) NimBLE: 0x00
+D (7637) NimBLE: 0x04
+D (7647) NimBLE: 0x00
+D (7647) NimBLE: 0x13
+D (7647) NimBLE:
+
+I (7647) NimBLE: Subscribe to the custom subscribable characteristic complete; status=0 conn_handle=0
+I (7657) NimBLE:  attr_handle=30 value=
+I (7657) NimBLE:
+
+I (7667) NimBLE: GATT procedure initiated: write; 
+I (7667) NimBLE: att_handle=29 len=1
+
+D (7667) NimBLE: host tx hci data; handle=0 length=8
+
+D (7677) NimBLE: ble_hs_hci_acl_tx():
+D (7677) NimBLE: 0x00
+D (7687) NimBLE: 0x00 
+D (7687) NimBLE: 0x08
+D (7687) NimBLE: 0x00
+D (7687) NimBLE: 0x04
+D (7687) NimBLE: 0x00
+D (7697) NimBLE: 0x04
+D (7697) NimBLE: 0x00
+D (7697) NimBLE: 0x12 
+D (7697) NimBLE: 0x1d
+D (7697) NimBLE: 0x00
+D (7707) NimBLE: 0x19
+D (7707) NimBLE:
+
+D (7707) NimBLE: ble_hs_hci_cmd_send: ogf=0x03 ocf=0x0035 len=5
+
+D (7717) NimBLE: 0x35 
+D (7717) NimBLE: 0x0c
+D (7717) NimBLE: 0x05
+D (7717) NimBLE: 0x01
+D (7717) NimBLE: 0x00
+D (7727) NimBLE: 0x00
+D (7727) NimBLE: 0x07
+D (7727) NimBLE: 0x00 
+D (7727) NimBLE:
+
+D (7787) NimBLE: ble_hs_hci_evt_acl_process(): conn_handle=0 pb=2 len=5 data=
+D (7797) NimBLE: 0x01 
+D (7797) NimBLE: 0x00
+D (7797) NimBLE: 0x04
+D (7797) NimBLE: 0x00
+D (7797) NimBLE: 0x13
+D (7797) NimBLE:
+
+I (7797) NimBLE: Write to the custom subscribable characteristic complete; status=0 conn_handle=0 attr_handle=29
+
+I (7807) NimBLE: GATT procedure initiated: read;
+I (7817) NimBLE: att_handle=29
+
+D (7817) NimBLE: host tx hci data; handle=0 length=7
+
+D (7827) NimBLE: ble_hs_hci_acl_tx(): 
+D (7827) NimBLE: 0x00
+D (7827) NimBLE: 0x00
+D (7827) NimBLE: 0x07
+D (7837) NimBLE: 0x00
+D (7837) NimBLE: 0x03
+D (7837) NimBLE: 0x00 
+D (7837) NimBLE: 0x04
+D (7837) NimBLE: 0x00
+D (7847) NimBLE: 0x0a
+D (7847) NimBLE: 0x1d
+D (7847) NimBLE: 0x00
+D (7847) NimBLE:
+
+D (7857) NimBLE: ble_hs_hci_evt_acl_process(): conn_handle=0 pb=2 len=8 data=
+D (7857) NimBLE: 0x04
+D (7857) NimBLE: 0x00
+D (7857) NimBLE: 0x04
+D (7867) NimBLE: 0x00
+D (7867) NimBLE: 0x1b
+D (7867) NimBLE: 0x1d 
+D (7867) NimBLE: 0x00
+D (7877) NimBLE: 0x19
+D (7877) NimBLE:
+
+I (7877) NimBLE: received notification; conn_handle=0 attr_handle=29 attr_len=1
+
+D (8037) NimBLE: ble_hs_hci_evt_acl_process(): conn_handle=0 pb=2 len=6 data=
+D (8037) NimBLE: 0x02 
+D (8037) NimBLE: 0x00
+D (8037) NimBLE: 0x04
+D (8047) NimBLE: 0x00
+D (8047) NimBLE: 0x0b
+D (8047) NimBLE: 0x19
+D (8047) NimBLE:
+
+I (8047) NimBLE: Read complete for the subscribable characteristic; status=0 conn_handle=0
+I (8057) NimBLE:  attr_handle=29 value=
+I (8067) NimBLE: 0x19
+I (8067) NimBLE:
+
+D (8857) NimBLE: ble_hs_hci_cmd_send: ogf=0x03 ocf=0x0035 len=5
+
+D (8857) NimBLE: 0x35
+D (8857) NimBLE: 0x0c
+D (8857) NimBLE: 0x05
+D (8857) NimBLE: 0x01
+D (8857) NimBLE: 0x00
+D (8857) NimBLE: 0x00
+D (8857) NimBLE: 0x03
+D (8867) NimBLE: 0x00
+D (8867) NimBLE:
