@@ -1,26 +1,36 @@
 # Exclude build directory
-./fan/blepreph/build/
-./fan/blepreph/.devcontainer/
-./fan/blepreph/.vscode/
-./remote/BLECent1/build/
-./remote/BLECent1/.devcontainer/
-./remote/BLECent1/.vscode/
+/fan/blepreph/build/
+/fan/blepreph/.devcontainer/
+/fan/blepreph/.vscode/
+/remote/BLECent1/build/
+/remote/BLECent1/.devcontainer/
+/remote/BLECent1/.vscode/
 
 # ESP-IDF generated files
-/sdkconfig.old
-/CMakeCache.txt
-/CMakeFiles/
-/dependencies.lock
-/bootloader/
-/managed_components/
+/fan/blepreph/sdkconfig.old
+/fan/blepreph/CMakeCache.txt
+/fan/blepreph/CMakeFiles/
+/fan/blepreph/dependencies.lock
+/fan/blepreph/bootloader/
+/fan/blepreph/managed_components/
+
+/remote/BLECent1/sdkconfig.old
+/remote/BLECent1/CMakeCache.txt
+/remote/BLECent1/CMakeFiles/
+/remote/BLECent1/dependencies.lock
+/remote/BLECent1/bootloader/
+/remote/BLECent1/managed_components/
 
 # Logs or temp files
 *.log
 *.tmp
 
 # VS Code or IDE-specific
-.vscode/
-.idea/
+/fan/blepreph/.vscode/
+/fan/blepreph/.idea/
+
+/remote/BLECent1/.vscode/
+/remote/BLECent1/.idea/
 
 # Python virtual environments (if used)
 venv/
