@@ -25,11 +25,27 @@
 #include "services/gap/ble_svc_gap.h"
 #include "services/gatt/ble_svc_gatt.h"
 #include "bleprph.h"
-#include "services/ans/ble_svc_ans.h"
+//#include "services/ans/ble_svc_ans.h"
 
 /*** Maximum number of characteristics with the notify flag ***/
 
 #define MAX_CONNECTIONS 2
+
+
+
+
+/* Value handle storage for characteristics — must exist before initializer uses &... */
+static uint16_t ctrl_rpm_handle;
+static uint16_t ctrl_angle_handle;
+static uint16_t ctrl_light_handle;
+static uint16_t ctrl_power_handle;
+
+static uint16_t stat_rpm_handle;
+static uint16_t stat_angle_handle;
+static uint16_t stat_light_handle;
+static uint16_t stat_power_handle;
+
+
 
 // Array to store up to two connection handles
 static uint16_t conn_handles[MAX_CONNECTIONS] = {BLE_HS_CONN_HANDLE_NONE, BLE_HS_CONN_HANDLE_NONE};
@@ -75,6 +91,77 @@ int get_connection_index(uint16_t conn_handle) {
     return -1;
 }
 
+
+
+
+
+static int
+gatt_svc_access(uint16_t conn_handle, uint16_t attr_handle,
+                struct ble_gatt_access_ctxt *ctxt,
+                void *arg);
+
+
+
+
+
+
+/* --- Add these global control/status variables (choose types you need) --- */
+static uint32_t g_ctrl_rpm = 0;
+static uint32_t g_ctrl_angle = 0;
+static uint8_t  g_ctrl_light = 0;
+static uint8_t  g_ctrl_power = 0;
+
+static uint32_t g_stat_rpm = 0;
+static uint32_t g_stat_angle = 0;
+static uint8_t  g_stat_light = 0;
+static uint8_t  g_stat_power = 0;
+
+/* --- Simple accessors used by the read path (implement as you like) --- */
+static inline uint32_t current_ctrl_rpm(void)   { return g_ctrl_rpm; }
+static inline uint32_t current_ctrl_angle(void) { return g_ctrl_angle; }
+static inline uint8_t  current_ctrl_light(void) { return g_ctrl_light; }
+static inline uint8_t  current_ctrl_power(void) { return g_ctrl_power; }
+
+static inline uint32_t current_stat_rpm(void)   { return g_stat_rpm; }
+static inline uint32_t current_stat_angle(void) { return g_stat_angle; }
+static inline uint8_t  current_stat_light(void) { return g_stat_light; }
+static inline uint8_t  current_stat_power(void) { return g_stat_power; }
+
+/* --- Simple "scheduler" stubs. In real code, post work to a task. --- */
+static void schedule_set_rpm(uint32_t rpm)
+{
+    /* For demo: apply immediately and update status + notify subscribers */
+    g_stat_rpm = rpm;
+    /* stat_rpm_handle must be defined earlier in your file */
+    ble_gatts_chr_updated(stat_rpm_handle);
+}
+
+static void schedule_set_angle(uint32_t angle)
+{
+    g_stat_angle = angle;
+    ble_gatts_chr_updated(stat_angle_handle);
+}
+
+static void schedule_set_light(uint8_t light)
+{
+    g_stat_light = light;
+    ble_gatts_chr_updated(stat_light_handle);
+}
+
+static void schedule_set_power(uint8_t power)
+{
+    g_stat_power = power;
+    ble_gatts_chr_updated(stat_power_handle);
+}
+
+
+
+
+
+
+
+// Definitions of our two custom services
+
 static const ble_uuid128_t gatt_svr_svc_uuid =
     BLE_UUID128_INIT(0x2d, 0x71, 0xa2, 0x59, 0xb4, 0x58, 0xc8, 0x12,
                      0x99, 0x99, 0x43, 0x95, 0x12, 0x2f, 0x46, 0x59);
@@ -92,10 +179,60 @@ static const ble_uuid128_t gatt_svr_dsc_uuid =
     BLE_UUID128_INIT(0x01, 0x01, 0x01, 0x01, 0x12, 0x12, 0x12, 0x12,
                      0x23, 0x23, 0x23, 0x23, 0x34, 0x34, 0x34, 0x34);
 
-static int
-gatt_svc_access(uint16_t conn_handle, uint16_t attr_handle,
-                struct ble_gatt_access_ctxt *ctxt,
-                void *arg);
+
+
+// Example 128-bit UUIDs for two custom services
+static const ble_uuid128_t control_svc_uuid = BLE_UUID128_INIT(
+    0xAA,0xAA,0xAA,0xAA, 0xAA,0xAA,0x11,0x00, 0x10,0x01,0x10,0x11, 0xAA,0xAA,0xAA,0xAA);
+static const ble_uuid128_t status_svc_uuid  = BLE_UUID128_INIT(
+    0xAA,0xAA,0xAA,0xAA, 0xAA,0xAA,0x32,0x43, 0x54,0x65,0x76,0x87, 0xAA,0xAA,0xAA,0xAA);
+
+// Characteristic UUIDs for RPM, Angle, Light, Power (Control service)
+static const ble_uuid128_t ctrl_rpm_uuid   = BLE_UUID128_INIT(
+    0x01,0xC7,0xBE,0xEF, 0xEF,0xBE,0xAD,0xDE, 0x90,0xAB,0xCD,0xEF, 0xFE,0xDC,0xBA,0x98);
+static const ble_uuid128_t ctrl_angle_uuid = BLE_UUID128_INIT(
+    0x02,0xC7,0xBE,0xEF, 0xEF,0xBE,0xAD,0xDE, 0x90,0xAB,0xCD,0xEF, 0xFE,0xDC,0xBA,0x98); 
+static const ble_uuid128_t ctrl_light_uuid = BLE_UUID128_INIT(
+    0x03,0xC7,0xBE,0xEF, 0xEF,0xBE,0xAD,0xDE, 0x90,0xAB,0xCD,0xEF, 0xFE,0xDC,0xBA,0x98);
+static const ble_uuid128_t ctrl_power_uuid = BLE_UUID128_INIT(
+    0x04,0xC7,0xBE,0xEF, 0xEF,0xBE,0xAD,0xDE, 0x90,0xAB,0xCD,0xEF, 0xFE,0xDC,0xBA,0x98);
+// Characteristic UUIDs for RPM, Angle, Light, Power (Status service)
+static const ble_uuid128_t stat_rpm_uuid   = BLE_UUID128_INIT(
+    0x01,0x57,0xBE,0xEF, 0xEF,0xBE,0xAD,0xDE, 0x90,0xAB,0xCD,0xEF, 0xFE,0xDC,0xBA,0x98);
+static const ble_uuid128_t stat_angle_uuid = BLE_UUID128_INIT(
+    0x02,0x57,0xBE,0xEF, 0xEF,0xBE,0xAD,0xDE, 0x90,0xAB,0xCD,0xEF, 0xFE,0xDC,0xBA,0x98);
+static const ble_uuid128_t stat_light_uuid = BLE_UUID128_INIT(
+    0x03,0x57,0xBE,0xEF, 0xEF,0xBE,0xAD,0xDE, 0x90,0xAB,0xCD,0xEF, 0xFE,0xDC,0xBA,0x98);
+static const ble_uuid128_t stat_power_uuid = BLE_UUID128_INIT(
+    0x04,0x57,0xBE,0xEF, 0xEF,0xBE,0xAD,0xDE, 0x90,0xAB,0xCD,0xEF, 0xFE,0xDC,0xBA,0x98);
+
+
+
+static const struct ble_gatt_chr_def control_chrs[] = {
+    { .uuid = &ctrl_rpm_uuid.u,   .access_cb = gatt_svc_access, .val_handle = &ctrl_rpm_handle,   .flags = BLE_GATT_CHR_F_READ | BLE_GATT_CHR_F_WRITE },
+    { .uuid = &ctrl_angle_uuid.u, .access_cb = gatt_svc_access, .val_handle = &ctrl_angle_handle, .flags = BLE_GATT_CHR_F_READ | BLE_GATT_CHR_F_WRITE },
+    { .uuid = &ctrl_light_uuid.u, .access_cb = gatt_svc_access, .val_handle = &ctrl_light_handle, .flags = BLE_GATT_CHR_F_READ | BLE_GATT_CHR_F_WRITE },
+    { .uuid = &ctrl_power_uuid.u, .access_cb = gatt_svc_access, .val_handle = &ctrl_power_handle, .flags = BLE_GATT_CHR_F_READ | BLE_GATT_CHR_F_WRITE },
+    { 0 }  /* End of characteristics */
+};
+static const struct ble_gatt_chr_def status_chrs[] = {
+    { .uuid = &stat_rpm_uuid.u,   .access_cb = gatt_svc_access, .val_handle = &stat_rpm_handle,   .flags = BLE_GATT_CHR_F_READ | BLE_GATT_CHR_F_NOTIFY },
+    { .uuid = &stat_angle_uuid.u, .access_cb = gatt_svc_access, .val_handle = &stat_angle_handle, .flags = BLE_GATT_CHR_F_READ | BLE_GATT_CHR_F_NOTIFY },
+    { .uuid = &stat_light_uuid.u, .access_cb = gatt_svc_access, .val_handle = &stat_light_handle, .flags = BLE_GATT_CHR_F_READ | BLE_GATT_CHR_F_NOTIFY },
+    { .uuid = &stat_power_uuid.u, .access_cb = gatt_svc_access, .val_handle = &stat_power_handle, .flags = BLE_GATT_CHR_F_READ | BLE_GATT_CHR_F_NOTIFY },
+    { 0 }
+};
+
+
+//---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
 
 static const struct ble_gatt_svc_def gatt_svr_svcs[] = {
     {
@@ -135,6 +272,18 @@ static const struct ble_gatt_svc_def gatt_svr_svcs[] = {
     },
 
     {
+        .type = BLE_GATT_SVC_TYPE_PRIMARY,
+        .uuid = &control_svc_uuid.u,
+        .characteristics = control_chrs,
+    },
+
+    {
+        .type = BLE_GATT_SVC_TYPE_PRIMARY,
+        .uuid = &status_svc_uuid.u,
+        .characteristics = status_chrs,
+    },
+
+    {
         0, /* No more services. */
     },
 };
@@ -171,85 +320,115 @@ gatt_svr_write(struct os_mbuf *om, uint16_t min_len, uint16_t max_len,
  *     Append the value to ctxt->om if the operation is READ
  *     Write ctxt->om to the value if the operation is WRITE
  **/
+
+
 static int
 gatt_svc_access(uint16_t conn_handle, uint16_t attr_handle,
                 struct ble_gatt_access_ctxt *ctxt, void *arg)
 {
-    const ble_uuid_t *uuid;
     int rc;
 
+    /* Helpful debug log */
+    MODLOG_DFLT(INFO, "gatt_access: op=%d conn=%d handle=%d\n",
+                ctxt->op, conn_handle, attr_handle);
+
     switch (ctxt->op) {
+
     case BLE_GATT_ACCESS_OP_READ_CHR:
-        if (conn_handle != BLE_HS_CONN_HANDLE_NONE) {
-            int idx = get_connection_index(conn_handle);
-            MODLOG_DFLT(INFO, "Characteristic read; conn_handle=%d (idx=%d) attr_handle=%d\n",
-                        conn_handle, idx, attr_handle);
-        } else {
-            MODLOG_DFLT(INFO, "Characteristic read by NimBLE stack; attr_handle=%d\n",
-                        attr_handle);
-        }
-        uuid = ctxt->chr->uuid;
-        if (attr_handle == gatt_svr_chr_val_handle) {
-            rc = os_mbuf_append(ctxt->om,
-                                &gatt_svr_chr_val,
-                                sizeof(gatt_svr_chr_val));
+        if (attr_handle == ctrl_rpm_handle) {
+            uint32_t v = current_ctrl_rpm();
+            rc = os_mbuf_append(ctxt->om, &v, sizeof(v));
             return rc == 0 ? 0 : BLE_ATT_ERR_INSUFFICIENT_RES;
         }
-        goto unknown;
+        if (attr_handle == ctrl_angle_handle) {
+            uint32_t v = current_ctrl_angle();
+            rc = os_mbuf_append(ctxt->om, &v, sizeof(v));
+            return rc == 0 ? 0 : BLE_ATT_ERR_INSUFFICIENT_RES;
+        }
+        if (attr_handle == ctrl_light_handle) {
+            uint8_t v = current_ctrl_light();
+            rc = os_mbuf_append(ctxt->om, &v, sizeof(v));
+            return rc == 0 ? 0 : BLE_ATT_ERR_INSUFFICIENT_RES;
+        }
+        if (attr_handle == ctrl_power_handle) {
+            uint8_t v = current_ctrl_power();
+            rc = os_mbuf_append(ctxt->om, &v, sizeof(v));
+            return rc == 0 ? 0 : BLE_ATT_ERR_INSUFFICIENT_RES;
+        }
+
+        if (attr_handle == stat_rpm_handle) {
+            uint32_t v = current_stat_rpm();
+            rc = os_mbuf_append(ctxt->om, &v, sizeof(v));
+            return rc == 0 ? 0 : BLE_ATT_ERR_INSUFFICIENT_RES;
+        }
+        if (attr_handle == stat_angle_handle) {
+            uint32_t v = current_stat_angle();
+            rc = os_mbuf_append(ctxt->om, &v, sizeof(v));
+            return rc == 0 ? 0 : BLE_ATT_ERR_INSUFFICIENT_RES;
+        }
+        if (attr_handle == stat_light_handle) {
+            uint8_t v = current_stat_light();
+            rc = os_mbuf_append(ctxt->om, &v, sizeof(v));
+            return rc == 0 ? 0 : BLE_ATT_ERR_INSUFFICIENT_RES;
+        }
+        if (attr_handle == stat_power_handle) {
+            uint8_t v = current_stat_power();
+            rc = os_mbuf_append(ctxt->om, &v, sizeof(v));
+            return rc == 0 ? 0 : BLE_ATT_ERR_INSUFFICIENT_RES;
+        }
+
+        /* Unknown read - return an error (do not assert) */
+        return BLE_ATT_ERR_UNLIKELY;
 
     case BLE_GATT_ACCESS_OP_WRITE_CHR:
-        if (conn_handle != BLE_HS_CONN_HANDLE_NONE) {
-            int idx = get_connection_index(conn_handle);
-            MODLOG_DFLT(INFO, "Characteristic write; conn_handle=%d (idx=%d) attr_handle=%d",
-                        conn_handle, idx, attr_handle);
-        } else {
-            MODLOG_DFLT(INFO, "Characteristic write by NimBLE stack; attr_handle=%d",
-                        attr_handle);
-        }
-        uuid = ctxt->chr->uuid;
-        if (attr_handle == gatt_svr_chr_val_handle) {
-            rc = gatt_svr_write(ctxt->om,
-                                sizeof(gatt_svr_chr_val),
-                                sizeof(gatt_svr_chr_val),
-                                &gatt_svr_chr_val, NULL);
-            ble_gatts_chr_updated(attr_handle);
-            MODLOG_DFLT(INFO, "Notification/Indication scheduled for all subscribed peers.\n");
+        if (attr_handle == ctrl_rpm_handle) {
+            /* expect 4 bytes uint32_t */
+            rc = gatt_svr_write(ctxt->om, sizeof(uint32_t), sizeof(uint32_t), &g_ctrl_rpm, NULL);
+            if (rc == 0) {
+                /* schedule hardware action; notify on completion */
+                schedule_set_rpm(g_ctrl_rpm);
+            }
             return rc;
         }
-        goto unknown;
+        if (attr_handle == ctrl_angle_handle) {
+            rc = gatt_svr_write(ctxt->om, sizeof(uint32_t), sizeof(uint32_t), &g_ctrl_angle, NULL);
+            if (rc == 0) schedule_set_angle(g_ctrl_angle);
+            return rc;
+        }
+        if (attr_handle == ctrl_light_handle) {
+            rc = gatt_svr_write(ctxt->om, sizeof(uint8_t), sizeof(uint8_t), &g_ctrl_light, NULL);
+            if (rc == 0) schedule_set_light(g_ctrl_light);
+            return rc;
+        }
+        if (attr_handle == ctrl_power_handle) {
+            rc = gatt_svr_write(ctxt->om, sizeof(uint8_t), sizeof(uint8_t), &g_ctrl_power, NULL);
+            if (rc == 0) schedule_set_power(g_ctrl_power);
+            return rc;
+        }
+
+        /* Writes to status chars are not permitted */
+        return BLE_ATT_ERR_WRITE_NOT_PERMITTED;
 
     case BLE_GATT_ACCESS_OP_READ_DSC:
-        if (conn_handle != BLE_HS_CONN_HANDLE_NONE) {
-            int idx = get_connection_index(conn_handle);
-            MODLOG_DFLT(INFO, "Descriptor read; conn_handle=%d (idx=%d) attr_handle=%d\n",
-                        conn_handle, idx, attr_handle);
-        } else {
-            MODLOG_DFLT(INFO, "Descriptor read by NimBLE stack; attr_handle=%d\n",
-                        attr_handle);
-        }
-        uuid = ctxt->dsc->uuid;
-        if (ble_uuid_cmp(uuid, &gatt_svr_dsc_uuid.u) == 0) {
-            rc = os_mbuf_append(ctxt->om,
-                                &gatt_svr_dsc_val,
-                                sizeof(gatt_svr_chr_val));
+        /* If you have a custom descriptor to serve, check its handle/uuid here.
+           For now, only serve the example custom descriptor gatt_svr_dsc_val. */
+        if (arg && ctxt->dsc && ble_uuid_cmp(ctxt->dsc->uuid, &gatt_svr_dsc_uuid.u) == 0) {
+            rc = os_mbuf_append(ctxt->om, &gatt_svr_dsc_val, sizeof(gatt_svr_dsc_val));
             return rc == 0 ? 0 : BLE_ATT_ERR_INSUFFICIENT_RES;
         }
-        goto unknown;
+        return BLE_ATT_ERR_UNLIKELY;
 
     case BLE_GATT_ACCESS_OP_WRITE_DSC:
-        goto unknown;
+        /* Accept descriptor writes (this covers CCCD writes from clients).
+           NimBLE handles CCCD state automatically. Return success. */
+        return 0;
 
     default:
-        goto unknown;
+        return BLE_ATT_ERR_UNLIKELY;
     }
-
-unknown:
-    /* Unknown characteristic/descriptor;
-     * The NimBLE host should not have called this function;
-     */
-    assert(0);
-    return BLE_ATT_ERR_UNLIKELY;
 }
+
+
 
 void
 gatt_svr_register_cb(struct ble_gatt_register_ctxt *ctxt, void *arg)
@@ -290,7 +469,7 @@ gatt_svr_init(void)
 
     ble_svc_gap_init();
     ble_svc_gatt_init();
-    ble_svc_ans_init();
+    //ble_svc_ans_init();
 
     rc = ble_gatts_count_cfg(gatt_svr_svcs);
     if (rc != 0) {
